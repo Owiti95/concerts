@@ -10,3 +10,6 @@ class Database:
 
     def get_session(self):
         return self.Session()
+
+    def remove_session(self):
+        self.Session.remove()
