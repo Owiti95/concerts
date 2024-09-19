@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Date
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship, declarative_base
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -23,6 +23,10 @@ class Band(Base):
     def most_performances(cls, session):
         from sqlalchemy import func
         return session.query(cls).join(Concert).group_by(cls.id).order_by(func.count(Concert.id).desc()).first()
+
+    def play_in_venue(self, venue, date):
+        new_concert = Concert(band=self, venue=venue, date=date)
+        return new_concert  # Returns the newly created concert instance
 
 class Venue(Base):
     __tablename__ = 'venues'
@@ -49,7 +53,7 @@ class Concert(Base):
     id = Column(Integer, primary_key=True)
     band_id = Column(Integer, ForeignKey('bands.id'), nullable=False)
     venue_id = Column(Integer, ForeignKey('venues.id'), nullable=False)
-    date = Column(Date, nullable=False)
+    date = Column(String, nullable=False)  # Changed from Date to String
 
     band = relationship("Band", back_populates="concerts")
     venue = relationship("Venue", back_populates="concerts")
